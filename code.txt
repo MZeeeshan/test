@@ -1,0 +1,276 @@
+//production login
+Cypress.Commands.add('prod_login',()=>{
+    cy.visit('https://inventhub.io')
+    cy.get('a[href="/c/login"]').first().click()
+    cy.get("#email").type("hamza1")
+    cy.get("#password").type("test@1234")
+    cy.get("button[type=submit]").click()
+    //cy.xpath('//*[@id="root"]/div/div/div/div/div/div/div[1]/div/form/button').click()
+})
+
+//staging login
+Cypress.Commands.add('stage_login',()=>{
+    cy.visit('https://com-stage.inventhub.io/')
+    cy.get('a[href="/c/login"]').first().click()
+    cy.get("#email").type("jerico")
+    cy.get("#password").type("test@1234")
+    cy.get("button[type=submit]").click()
+    //cy.xpath('//*[@id="root"]/div/div/div/div/div/div/div[1]/div/form/button').click()
+})
+
+Cypress.Commands.add('signout',()=>{
+    cy.get('#navbarSupportedContent > ul.navbar-nav.navbar-nav-right > li.nav-item.dropdown.userActionsDropdown').click()   //profile dropdown
+    cy.get('#navbarSupportedContent > ul.navbar-nav.navbar-nav-right > li.nav-item.dropdown.userActionsDropdown.show > div > a.dropdown-item.footer.text-danger').click()   //signout
+})
+
+Cypress.Commands.add('home',()=>{
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click() //home
+})
+
+/* --------For Stage--------- */
+
+//Only create a project (Privacy = 1 -> Private & else Public)
+Cypress.Commands.add('create_project',(p)=>{
+    cy.xpath('//*[@id="navbarSupportedContent"]/ul[2]/li[1]/a/button').click()
+    cy.get('#name').type(p.pname)
+    cy.get('#description').type('nothing to say')
+    //cy.get('#license').select('MIT') 
+    if(p.privacy==1){
+    cy.get('#private').click()
+    }
+    cy.wait(1500)
+    cy.get('#root > div.CreateRepo_main__1wPEz > div > form > button').click({force: true})
+    cy.wait(3000)
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click() //home
+    
+})
+
+//Create Project Stage
+Cypress.Commands.add('stage_create_project',(p)=>{
+    cy.xpath('//*[@id="navbarSupportedContent"]/ul[2]/li[1]/a/button').click()
+    cy.get('#name').type(p.pname)
+    cy.get('#description').type('nothing to say')
+    //cy.get('#license').select('MIT') 
+    if(p.privacy==1){
+    cy.get('#private').click()
+    }
+    cy.wait(1500)
+    cy.get('#root > div.CreateRepo_main__1wPEz > div > form > button').click({force: true})
+    cy.wait(3000)
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click() //home
+    
+})
+
+
+Cypress.Commands.add('delete_project',(p)=>{
+    cy.wait(3000)
+    cy.get('a[href="/c/'+p.username+'/'+p.pname+'/tree/default"]').first().click()
+    cy.xpath('//*[@id="root"]/div[1]/ul/li[6]/a').click()
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[2]/ul/li[3]/span').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[5]/div[4]/button').click()
+    cy.wait(500)
+    //cy.get('#deleteProjectModal > .modal-dialog > .modal-content > .modal-body > form > .form-control').type(p.pname)
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[2]/form/input').type(p.pname)
+    cy.wait(500)
+    //cy.get('#deleteProjectModal > .modal-dialog > .modal-content > .modal-footer > .btn').click()
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[3]/button').click()
+    cy.wait(2000)
+})
+
+//Stage Delete project
+Cypress.Commands.add('stage_delete_project',(p)=>{
+    cy.wait(3000)
+    cy.get('a[href="/c/'+p.username+'/'+p.pname+'/tree/default"]').first().click()
+    cy.xpath('//*[@id="root"]/div[1]/ul/li[6]/a').click()
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[2]/ul/li[3]/span').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[4]/div[4]/button').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[2]/form/input').type(p.pname)
+    cy.wait(500)
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[3]/button').click()
+    cy.wait(2000)
+})
+
+
+//create and Delete Project none license
+Cypress.Commands.add('create_then_delete_project',(p)=>{
+    cy.get('#navbarSupportedContent > ul:nth-child(2) > li:nth-child(1) > a > button').click()
+    cy.get('#name').type(p.pname)
+    cy.get('#description').type('nothing to say')
+    if(p.privacy==1){
+    cy.get('#private').click()
+    }
+    cy.wait(500)
+    cy.get('#root > div.CreateRepo_main__1wPEz > div > form > button').click({force: true})
+    cy.wait(3000)
+    cy.xpath('//*[@id="root"]/div[2]/ul/li[6]/a').click()
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div[3]/ul/li[3]/span').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div[5]/div[4]/button').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[2]/form/input').type(p.pname)
+    cy.wait(500)
+    cy.xpath('//*[@id="deleteProjectModal"]/div/div/div[3]/button').click()
+})
+
+
+//add collaborator in a project
+Cypress.Commands.add('add_collab',(a)=>{
+    cy.get('a[href="/c/hamza1/'+a.pname+'/tree/default"]').first().click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[2]/ul/li[5]/a').click()
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div[4]/div[2]/button').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="name"]').type(a.username)
+    cy.wait(500)
+    if(a.role==1){
+        cy.get('#role').select('Read')    //read role  
+        }
+    cy.xpath('//*[@id="addCollaboratorModal"]/div/div/div[3]/button[2]').click()   
+    //home
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+    cy.wait(1000)  
+})
+
+//add collaborator in a project for Stage
+Cypress.Commands.add('stage_add_collab',(a)=>{
+    cy.get('a[href="/c/'+a.owner+'/'+a.pname+'/tree/default"]').first().click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[1]/ul/li[5]/a').click()
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[4]/div[2]/button').click()
+    cy.wait(500)
+    cy.xpath('//*[@id="name"]').type(a.username)
+    cy.wait(500)
+    if(a.role==1){
+        cy.get('#role').select('Read')    //read role  
+        }
+    cy.xpath('//*[@id="addCollaboratorModal"]/div/div/div[3]/button[2]').click()   
+    //home
+    cy.xpath('//*[@id="navbarSupportedContent"]/ul[1]/li[2]/a').click()
+    cy.wait(1000)  
+})
+
+
+//Cancel Invite
+Cypress.Commands.add('cancel_invite',(a)=>{
+    cy.get('a[href="/c/hamza1/'+a.pname+'/tree/default"]').first().click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[2]/ul/li[5]/a').click()
+    //cy.xpath('//*[@id="root"]/div[3]/div[1]/div[4]/div[2]/button').click()
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div[6]/div[3]/div[3]/button').click()
+    //home
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+})
+
+//Cancel Invite for stage
+Cypress.Commands.add('stage_cancel_invite',(a)=>{
+    cy.get('a[href="/c/'+a.owner+'/'+a.pname+'/tree/default"]').first().click()
+    cy.wait(500)
+    cy.xpath('//*[@id="root"]/div[1]/ul/li[5]/a').click()
+    cy.xpath('//*[@id="root"]/div[2]/div[1]/div[6]/div[3]/div[3]/button').click()
+    //home
+    cy.xpath('//*[@id="navbarSupportedContent"]/ul[1]/li[2]/a').click()
+})
+
+
+
+//Add BOM 
+Cypress.Commands.add('add_bom',(a)=>{
+    cy.get('a[href="/c/hamza1/'+a.pname+'/tree/default"]').click()
+    cy.wait(5000)
+    cy.xpath('//*[@id="root"]/div[2]/ul/li[4]/a').click()
+    cy.wait(3000)
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div/div[1]/div[2]/button').click()
+    cy.xpath('//*[@id="root"]/div[3]/div[1]/div/div[1]/div[2]/div/div[1]').click()
+    cy.wait(500)
+    cy.get('#form-addBomModal > div.modal-body > span > div:nth-child(2) > input').type(a.bname)
+    cy.wait(500)
+    cy.get('#form-addBomModal > div.modal-body > span > div:nth-child(4) > input').type(a.rname)
+    cy.get('#file').type(a.filename)
+    cy.xpath('//*[@id="form-addBomModal"]/div[2]/span/div[7]/div[1]').click()
+    cy.wait(2000)
+    cy.xpath('//*[@id="form-addBomModal"]/div[3]/button[2]').click()
+    cy.wait(3000)
+
+})
+
+//Basic Flow
+Cypress.Commands.add('basic_flow',()=>{
+    cy.get('a[href="/explore"]').click()
+    cy.wait(2500)
+//home
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+//create project button
+    cy.get('#navbarSupportedContent > ul:nth-child(2) > li:nth-child(1) > a > button').click()
+
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+//profile dropdown
+    cy.get('#navbarSupportedContent > ul.navbar-nav.navbar-nav-right > li.nav-item.dropdown.userActionsDropdown').click()
+//profile
+    cy.get('a[href="/p/hamza1"]').click()
+//get followers
+    cy.get('#__next > div.PublicProfile_publicProfile__23H4F > div.PublicProfile_expandTillBottom__161CK > div.PublicProfile_tabsWrapper__3Z7Fu > ul > li:nth-child(2) > span').click()
+//get following
+    cy.get('#__next > div.PublicProfile_publicProfile__23H4F > div.PublicProfile_expandTillBottom__161CK > div.PublicProfile_tabsWrapper__3Z7Fu > ul > li:nth-child(3) > span').click()
+//profile edit
+    cy.get('#__next > div.Header_headerWrapper__2mykr > div > a').click()
+//account
+    cy.get('#root > div.User_leftSidebar__3_lJu > ul > li:nth-child(3) > a').click()
+//integration
+    cy.get('#root > div.User_leftSidebar__3_lJu > ul > li:nth-child(4) > a').click()
+//projects
+    cy.get('#root > div.User_leftSidebar__3_lJu > ul > li:nth-child(5) > a').click()
+//collaborators
+    cy.get('#root > div.User_leftSidebar__3_lJu > ul > li:nth-child(6) > a').click()
+//billings
+    cy.get('#root > div.User_leftSidebar__3_lJu > ul > li:nth-child(7) > a').click()
+//home
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+//updates href= /c/hamza/updates
+    cy.get('#root > div > div.Home_leftSidebar__38CBV > ul > li:nth-child(2) > a').click()
+
+})
+
+//Search any user
+Cypress.Commands.add('search_user',(a)=>{
+    cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(1) > form > div > input').type(a.username).type('{enter}')
+        cy.get('.Tabs_tabs__mNPqW > li:nth-child(2) > span:nth-child(1)').click()
+
+        cy.get('a.Users_item__3J7QL:nth-child(2)').click()
+        //cy.get('.Tabs_tabs__BWkiM > li:nth-child(2) > span:nth-child(1)').click()
+        cy.get('.Tabs_tabs__BWkiM > li:nth-child(3) > span:nth-child(1)').click()
+        cy.get('.Tabs_tabs__BWkiM > li:nth-child(1) > span:nth-child(1)').click()
+        cy.xpath('//*[@id="__next"]/div[2]/div/button').click()
+        cy.wait(2000)
+        cy.xpath('//*[@id="__next"]/div[2]/div/button').click()
+
+        //home
+        cy.get('#navbarSupportedContent > ul.navbar-nav.mr-auto > li:nth-child(2) > a').click()
+})
+
+Cypress.Commands.add('follow_or_unfollow_user',(a)=>{
+    cy.xpath('//input[@placeholder="Search"]').type(a.username).type('{enter}')
+
+})
+
+/*
+Cypress.Commands.add('headless_login',()=>{
+    cy.request({
+        method: 'POST',
+        url: 'https://com.inventhub.io/api/auth/login',
+        body: {
+            user: {
+                emailOrUserName: 'hamza1',
+                password: 'test@1234',
+
+            }
+        }
+    })
+    .then((resp)=>{
+        window.localStorage.setItem('jwt', resp.body.user.token)
+    })
+   
+})
+*/  
